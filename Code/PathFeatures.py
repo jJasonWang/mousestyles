@@ -164,7 +164,7 @@ def compute_angles(path_obj, radian):
     vectors = [path_obj.loc[i + 1,'x':'y'] - path_obj.loc[i,'x':'y'] for i in indices]
     angles = [angle_between(v1,v2) for v1,v2 in zip(vectors[1:], vectors[:len(vectors)])]
     if not radian:
-        angles = [theta * 180 / math.pi for theta in out]
+        angles = [theta * 180 / math.pi for theta in angles]
     # the first and last elements should be None
     angles.insert(len(angles),None)
     angles.insert(0,None)
