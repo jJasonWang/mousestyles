@@ -1,9 +1,6 @@
+from __future__ import print_function, absolute_import, division
 import numpy as np
-import pandas as pd
 import math
-
-from mousestyles import data
-from mousestyles.path_index import path_index
 
 def compute_distances(path_obj):
     r"""
@@ -114,6 +111,10 @@ def compute_accelerations(speeds, timestamps):
     
     speeds_diff = [ x - y for x,y in zip(speeds[:len(speeds)], speeds[1:])] 
     time_diffs = [ x - y for x,y in zip(timestamps[:len(timestamps)-1], timestamps[2:])]
+
+    if np.count_nonzero(time_diffs) is not len(time_diffs):
+        raise ValueError("timestamps should not contain same times in i th and i+2 th rows.")
+
     out = [v/t for v,t in zip(speeds_diff, time_diffs)]
     return(out)
 
@@ -154,7 +155,7 @@ def compute_angles(path_obj, radian):
     Returns
     -------
     angles : list
-        contains the angles in the path.
+        contains the angles in the path. The first and last element are None
     """
 
     if type(radian) != bool:
@@ -164,4 +165,7 @@ def compute_angles(path_obj, radian):
     angles = [angle_between(v1,v2) for v1,v2 in zip(vectors[1:], vectors[:len(vectors)])]
     if not radian:
         angles = [theta * 180 / math.pi for theta in out]
+    # the first and last elements should be None
+    angles.insert(len(angles),None)
+    angles.insert(0,None)
     return(angles)
