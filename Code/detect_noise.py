@@ -33,8 +33,8 @@ def detect_noise(movement, paths, angle_threshold, delta_t):
     Examples
     --------
     >>> movement = data.load_movement(1, 2, 1)
-    >>> paths = path_index(movement, 1, 1)[:5]
-    [[0, 2], [6, 8], [107, 113], [129, 131], [144, 152]]
+    >>> paths = path_index(movement, 1, 1)
+    >>> noise = detect_noise(movement, paths, 135, .1)
     """
     
     # check if all inputs are positive
@@ -48,21 +48,20 @@ def detect_noise(movement, paths, angle_threshold, delta_t):
     
     for path in paths:
         path_obj = movement[path[0]:path[1]+1]
-        # indices = path_obj.index[:len(path_obj)-1]
         
         path_obj['angles'] = compute_angles(path_obj, False)
-        path_obj['sharp_angle'] = path['angles'] > angle_threshold
+        path_obj['sharp_angle'] = path_obj['angles'] > angle_threshold
         path_obj['noise'] = 0
         
         if len(path_obj) > 3:
-            for i in range(1,len(path_ojb)+1):
+            for i in range(0,len(path_obj)-1):
                 if path_obj['sharp_angle'].iloc[i]:
                     if path_obj['sharp_angle'].iloc[i+1]:
                         if path_obj['t'].iloc[i+1] - path_obj['t'].iloc[i] < delta_t:
                             path_obj['noise'].iloc[i] = noise_index
                             path_obj['noise'].iloc[i+1] = noise_index
-                        else noise_index += 1
-                    else noise_index += 1
+                        else:
+                            noise_index += 1
                     
         noise_path = np.append(noise_path, np.array(path_obj['noise']))
     
